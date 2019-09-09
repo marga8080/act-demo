@@ -1,4 +1,4 @@
-package com.act.demo.controller;
+package com.act.demo.controller.models;
 
 import org.activiti.editor.constants.ModelDataJsonConstants;
 import org.activiti.engine.ActivitiException;

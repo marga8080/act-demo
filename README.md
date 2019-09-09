@@ -3,7 +3,7 @@ springboot（2.1.2.RELEASE） 集成Activiti（5.22.0）demo
 
 ## 创建模型
 
-http://127.0.0.1:7070/create
+http://127.0.0.1:7070/models/list
 
 
 

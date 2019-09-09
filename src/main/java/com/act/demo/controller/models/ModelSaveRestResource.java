@@ -1,4 +1,4 @@
-package com.act.demo.controller;
+package com.act.demo.controller.models;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
