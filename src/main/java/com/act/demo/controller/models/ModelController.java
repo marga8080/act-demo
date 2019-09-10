@@ -46,9 +46,8 @@ public class ModelController extends BaseController {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@RequestMapping("list")
+	@GetMapping("list")
 	public String modelList(org.springframework.ui.Model model, HttpServletRequest request) {
-		logger.info("-------------列表页-------------");
 		List<Model> models = repositoryService.createModelQuery().orderByCreateTime().desc().list();
 		model.addAttribute("models", models);
 		String info = request.getParameter("info");
@@ -92,12 +91,11 @@ public class ModelController extends BaseController {
 
 			response.sendRedirect(request.getContextPath() + "/static/modeler.html?modelId=" + id);
 		} catch (IOException e) {
-			e.printStackTrace();
-			logger.info("模型创建失败！");
+			logger.error(e);
 		}
 	}
 
-	@RequestMapping("delete")
+	@GetMapping("delete")
 	@ResponseBody
 	public ResponseResult deleteModel(String id) {
 		repositoryService.deleteModel(id);
@@ -110,7 +108,7 @@ public class ModelController extends BaseController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("deployment")
+	@GetMapping("deployment")
 	@ResponseBody
 	public ResponseResult deploy(String id) throws Exception {
 		// 获取模型
@@ -135,13 +133,13 @@ public class ModelController extends BaseController {
 		return success("流程发布成功", null);
 	}
 
-	@RequestMapping("start")
+	@GetMapping("start")
 	@ResponseBody
 	public ResponseResult startProcess(String id) {
 		try {
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 			return error("流程启动失败！");
 		}
 		return success("流程启动成功", null);
@@ -162,7 +160,7 @@ public class ModelController extends BaseController {
   
             ByteArrayInputStream in = new ByteArrayInputStream(bpmnBytes);  
             IOUtils.copy(in, response.getOutputStream());  
-            String filename = bpmnModel.getMainProcess().getId() + ".bpmn20.xml";  
+            String filename = modelData.getName() + ".bpmn20.xml";  
             filename = new String(filename.getBytes("utf-8"), "iso-8859-1");
             response.setHeader("Content-Disposition", "attachment; filename=" + filename);  
             response.flushBuffer();  
