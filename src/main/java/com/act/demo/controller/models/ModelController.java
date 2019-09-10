@@ -1,5 +1,6 @@
 package com.act.demo.controller.models;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -14,10 +15,12 @@ import org.activiti.editor.language.json.converter.BpmnJsonConverter;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -36,7 +39,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Controller
 @RequestMapping("models")
 public class ModelController {
-	private static final Logger LOGGER = Logger.getLogger(ModelController.class);
+	private static final Logger logger = Logger.getLogger(ModelController.class);
 
 	@Autowired
 	private RepositoryService repositoryService;
@@ -45,7 +48,7 @@ public class ModelController {
 
 	@RequestMapping("list")
 	public String modelList(org.springframework.ui.Model model, HttpServletRequest request) {
-		LOGGER.info("-------------列表页-------------");
+		logger.info("-------------列表页-------------");
 		List<Model> models = repositoryService.createModelQuery().orderByCreateTime().desc().list();
 		model.addAttribute("models", models);
 		String info = request.getParameter("info");
@@ -60,7 +63,6 @@ public class ModelController {
 		try {
 			// 初始化一个空模型
 			Model model = repositoryService.newModel();
-
 			// 设置一些默认信息
 			String name = "new-process";
 			String description = "";
@@ -91,9 +93,8 @@ public class ModelController {
 			response.sendRedirect(request.getContextPath() + "/static/modeler.html?modelId=" + id);
 		} catch (IOException e) {
 			e.printStackTrace();
-			LOGGER.info("模型创建失败！");
+			logger.info("模型创建失败！");
 		}
-
 	}
 
 	@RequestMapping("delete")
@@ -102,17 +103,21 @@ public class ModelController {
 		return "删除成功！";
 	}
 
+	/**
+	 * 发布
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("deployment")
-	public @ResponseBody String deploy(String id) throws Exception {
-
+	@ResponseBody
+	public String deploy(String id) throws Exception {
 		// 获取模型
 		Model modelData = repositoryService.getModel(id);
 		byte[] bytes = repositoryService.getModelEditorSource(modelData.getId());
-
 		if (bytes == null) {
 			return "模型数据为空，请先设计流程并成功保存，再进行发布。";
 		}
-
 		JsonNode modelNode = new ObjectMapper().readTree(bytes);
 
 		BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
@@ -123,8 +128,7 @@ public class ModelController {
 
 		// 发布流程
 		String processName = modelData.getName() + ".bpmn20.xml";
-		Deployment deployment = repositoryService.createDeployment().name(modelData.getName())
-				.addString(processName, new String(bpmnBytes, "UTF-8")).deploy();
+		Deployment deployment = repositoryService.createDeployment().name(modelData.getName()).addString(processName, new String(bpmnBytes, "UTF-8")).deploy();
 		modelData.setDeploymentId(deployment.getId());
 		repositoryService.saveModel(modelData);
 		return "流程发布成功";
@@ -140,4 +144,28 @@ public class ModelController {
 		}
 		return "流程启动成功";
 	}
+	
+	/** 
+     * 导出model的xml文件 
+     */  
+    @GetMapping("export")  
+    public void export(String modelId, HttpServletResponse response) {  
+        try {  
+            Model modelData = repositoryService.getModel(modelId);  
+            BpmnJsonConverter jsonConverter = new BpmnJsonConverter();  
+            JsonNode editorNode = new ObjectMapper().readTree(repositoryService.getModelEditorSource(modelData.getId()));  
+            BpmnModel bpmnModel = jsonConverter.convertToBpmnModel(editorNode);  
+            BpmnXMLConverter xmlConverter = new BpmnXMLConverter();  
+            byte[] bpmnBytes = xmlConverter.convertToXML(bpmnModel);  
+  
+            ByteArrayInputStream in = new ByteArrayInputStream(bpmnBytes);  
+            IOUtils.copy(in, response.getOutputStream());  
+            String filename = bpmnModel.getMainProcess().getId() + ".bpmn20.xml";  
+            filename = new String(filename.getBytes("utf-8"), "iso-8859-1");
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);  
+            response.flushBuffer();  
+        } catch (Exception e) {  
+        	logger.error("导出model的xml文件失败：modelId="+modelId, e);  
+        }  
+    } 
 }
