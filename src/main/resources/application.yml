@@ -36,6 +36,21 @@ spring:
     database-schema-update: true  #是否每次都更新数据库
     #check-process-definitions: false  # activti是否自动部署
     #db-identity-used: false  #是否使用activti自带的用户体系
+    
+  # 使用的jackson的配置
+  jackson:
+    # Spring mvc的json序列化的命名为下划线模式
+#    property-naming-strategy: SNAKE_CASE
+    # 时间格式
+    date-format: yyyy-MM-dd HH:mm:ss
+    # 时区指定为东八区
+    time-zone: GMT+8
+    # 过滤掉值为Null的属性
+    default-property-inclusion: NON_NULL
+    generator:
+      # 数字类型的属性的值也加上双引号
+      WRITE_NUMBERS_AS_STRINGS: true
+      WRITE_BIGDECIMAL_AS_PLAIN: true
 
     
 mybatis-plus:

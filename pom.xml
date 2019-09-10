@@ -20,6 +20,8 @@
         <mybatisplus.springboot.version>3.1.0</mybatisplus.springboot.version>
         <p6spy.version>3.8.1</p6spy.version>
         <mysql.connector.version>5.1.45</mysql.connector.version>
+        <guava.version>27.0.1-jre</guava.version>
+        <hutool.version>4.5.1</hutool.version>
 	</properties>
 
 
@@ -100,6 +102,18 @@
             <artifactId>p6spy</artifactId>
             <version>${p6spy.version}</version>
         </dependency>
+        
+        <dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-all</artifactId>
+			<version>${hutool.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
         
         <dependency>
 			<groupId>org.springframework.boot</groupId>

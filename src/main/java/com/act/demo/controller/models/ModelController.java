@@ -17,13 +17,14 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.act.demo.config.ResponseResult;
+import com.act.demo.controller.BaseController;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -38,8 +39,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 @Controller
 @RequestMapping("models")
-public class ModelController {
-	private static final Logger logger = Logger.getLogger(ModelController.class);
+public class ModelController extends BaseController {
 
 	@Autowired
 	private RepositoryService repositoryService;
@@ -98,9 +98,10 @@ public class ModelController {
 	}
 
 	@RequestMapping("delete")
-	public @ResponseBody String deleteModel(String id) {
+	@ResponseBody
+	public ResponseResult deleteModel(String id) {
 		repositoryService.deleteModel(id);
-		return "删除成功！";
+		return success("删除成功", null);
 	}
 
 	/**
@@ -111,18 +112,18 @@ public class ModelController {
 	 */
 	@RequestMapping("deployment")
 	@ResponseBody
-	public String deploy(String id) throws Exception {
+	public ResponseResult deploy(String id) throws Exception {
 		// 获取模型
 		Model modelData = repositoryService.getModel(id);
 		byte[] bytes = repositoryService.getModelEditorSource(modelData.getId());
 		if (bytes == null) {
-			return "模型数据为空，请先设计流程并成功保存，再进行发布。";
+			return error("模型数据为空，请先设计流程并成功保存，再进行发布。");
 		}
 		JsonNode modelNode = new ObjectMapper().readTree(bytes);
 
 		BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
 		if (model.getProcesses().size() == 0) {
-			return "数据模型不符要求，请至少设计一条主线流程。";
+			return error("数据模型不符要求，请至少设计一条主线流程。");
 		}
 		byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(model);
 
@@ -131,18 +132,19 @@ public class ModelController {
 		Deployment deployment = repositoryService.createDeployment().name(modelData.getName()).addString(processName, new String(bpmnBytes, "UTF-8")).deploy();
 		modelData.setDeploymentId(deployment.getId());
 		repositoryService.saveModel(modelData);
-		return "流程发布成功";
+		return success("流程发布成功", null);
 	}
 
 	@RequestMapping("start")
-	public @ResponseBody String startProcess(String id) {
+	@ResponseBody
+	public ResponseResult startProcess(String id) {
 		try {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "流程启动失败！";
+			return error("流程启动失败！");
 		}
-		return "流程启动成功";
+		return success("流程启动成功", null);
 	}
 	
 	/** 

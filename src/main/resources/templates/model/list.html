@@ -62,7 +62,8 @@
             url:"/models/deployment?id="+id,
             type:"GET",
             success:function(res){
-                alert(res);
+                alert(res.message);
+                window.location.reload();
             }
         });
 
@@ -75,7 +76,8 @@
             url:"/models/delete?id="+id,
             type:"GET",
             success:function(res){
-                alert(res);
+                alert(res.message);
+                window.location.reload();
             }
         });
 
@@ -88,7 +90,8 @@
             url:'/models/start?id='+id,
             type:'GET',
             success:function(res){
-                alert(res);
+                alert(res.message);
+                window.location.reload();
             }
         });
     }
