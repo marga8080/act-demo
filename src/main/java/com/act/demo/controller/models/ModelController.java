@@ -16,7 +16,6 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,10 +49,6 @@ public class ModelController extends BaseController {
 	public String modelList(org.springframework.ui.Model model, HttpServletRequest request) {
 		List<Model> models = repositoryService.createModelQuery().orderByCreateTime().desc().list();
 		model.addAttribute("models", models);
-		String info = request.getParameter("info");
-		if (StringUtils.isNotEmpty(info)) {
-			model.addAttribute("info", info);
-		}
 		return "model/list";
 	}
 
