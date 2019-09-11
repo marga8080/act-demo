@@ -133,18 +133,6 @@ public class ModelController extends BaseController {
 		return success("流程发布成功", null);
 	}
 
-	@GetMapping("start")
-	@ResponseBody
-	public ResponseResult startProcess(String id) {
-		try {
-
-		} catch (Exception e) {
-			logger.error(e);
-			return error("流程启动失败！");
-		}
-		return success("流程启动成功", null);
-	}
-	
 	/** 
      * 导出model的xml文件 
      */  
