@@ -12,15 +12,7 @@
 </head>
 <body>
 <div class="info"><span th:text="${info}"></span></div>
-<a href="/models/create" class="btn btn-primary" >新建</a>
-<form id="taskList" action="/activiti/queryTaskSl" class="form-inline">
-    <select id="userId" name="userId" class="form-control">
-        <option value="userzhou">userzhou</option>
-        <option value="usertest">usertest</option>
-    </select>
-    <button onclick="taskList();" class="btn btn-default">任务列表</button>
-</form>
-
+<a href="/models/create" class="btn btn-primary" > 新 建 </a>
 <table class="table table-hover table-striped">
     <thead>
     <tr>
@@ -96,9 +88,7 @@
         });
     }
 
-    function taskList(){
-        $("#taskList").submit();
-    }
+   
 </script>
 </body>
 </html>
