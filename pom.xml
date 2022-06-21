@@ -19,7 +19,7 @@
 		<druid.springboot.version>1.1.10</druid.springboot.version>
         <mybatisplus.springboot.version>3.1.0</mybatisplus.springboot.version>
         <p6spy.version>3.8.1</p6spy.version>
-        <mysql.connector.version>5.1.45</mysql.connector.version>
+        <mysql.connector.version>8.0.28</mysql.connector.version>
         <guava.version>27.0.1-jre</guava.version>
         <hutool.version>4.5.1</hutool.version>
 	</properties>
